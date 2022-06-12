@@ -1,0 +1,73 @@
+﻿@using CAFEMENUPROJECT.DATA.Model
+@{
+    var List = ViewBag.List as List<CurrencyDto>;
+
+}
+
+@foreach (var item in List)
+{
+    <div class="col-md-6">
+        <div class="info-box shadow-none">
+            <span class="info-box-icon bg-info"><i class="fa fa-university"></i></span>
+
+            <div class="info-box-content">
+                <span class="info-box-text">@item.Key</span>
+                <span class="info-box-number">@item.Value</span>
+            </div>
+            <!-- /.info-box-content -->
+        </div>
+        <!-- /.info-box -->
+    </div>
+}
+
+<!--<div class="col-md-6">
+    <div class="info-box shadow-none">
+        <span class="info-box-icon bg-info"><i class="far fa-envelope"></i></span>
+
+        <div class="info-box-content">
+            <span class="info-box-text">Shadows</span>
+            <span class="info-box-number">None</span>
+        </div>-->
+<!-- /.info-box-content -->
+<!--</div>-->
+<!-- /.info-box -->
+<!--</div>-->
+<!-- /.col -->
+<!--<div class="col-md-6">
+    <div class="info-box shadow-sm">
+        <span class="info-box-icon bg-success"><i class="far fa-flag"></i></span>
+
+        <div class="info-box-content">
+            <span class="info-box-text">USD</span>
+            <span class="info-box-number"></span>
+        </div>-->
+<!-- /.info-box-content -->
+<!--</div>-->
+<!-- /.info-box -->
+<!--</div>
+
+<div class="col-md-6">
+    <div class="info-box shadow-sm">
+        <span class="info-box-icon bg-success"><i class="far fa-flag"></i></span>
+
+        <div class="info-box-content">
+            <span class="info-box-text">EURO</span>
+            <span class="info-box-number"></span>
+        </div>-->
+<!-- /.info-box-content -->
+<!--</div>-->
+<!-- /.info-box -->
+<!--</div>
+
+<div class="col-md-6">
+    <div class="info-box shadow-sm">
+        <span class="info-box-icon bg-success"><i class="far fa-flag"></i></span>
+
+        <div class="info-box-content">
+            <span class="info-box-text">Shadows</span>
+            <span class="info-box-number">Small</span>
+        </div>-->
+<!-- /.info-box-content -->
+<!--</div>-->
+<!-- /.info-box -->
+<!--</div>-->

@@ -1,0 +1,183 @@
+﻿@using CAFEMENUPROJECT.DATA.Entity
+@using CAFEMENUPROJECT.DATA.Model
+@model IEnumerable<CategoryDto>
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+
+    var Categories = ViewBag.Categories as List<Category>;
+    var TotalProducts = ViewBag.TotalProducts;
+    var TotalCategories = ViewBag.TotalCategories;
+}
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0">Dashboard</h1>
+            </div><!-- /.col -->
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active">Dashboard v1</li>
+                </ol>
+            </div><!-- /.col -->
+        </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+</div>
+<!-- /.content-header -->
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <!-- Small boxes (Stat box) -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="row">
+
+                    <div class="col-md-6">
+                        <!-- small box -->
+                        <div class="small-box bg-info">
+                            <div class="inner" style="min-height:145px;">
+                                <h3>@TotalProducts</h3>
+
+                                <p>Total Number Of Products</p>
+                            </div>
+                            <div class="icon">
+                                <i class="ion ion-bag"></i>
+                            </div>
+                            <a href="/Admin/Product/Index" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <!-- small box -->
+                        <div class="small-box bg-success">
+                            <div class="inner" style="min-height:145px;">
+                                <h3>@TotalCategories</h3>
+
+                                <p>Total Number Of Categories</p>
+                            </div>
+                            <div class="icon">
+                                <i class="ion ion-stats-bars"></i>
+                            </div>
+                            <a href="/Admin/Category/Index" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="row" id="card-body">
+
+                </div>
+            </div>
+
+            <!-- ./col -->
+            <!--<div class="col-lg-3 col-6">-->
+            <!-- small box -->
+            <!--<div class="small-box bg-warning">
+                    <div class="inner">
+                        <h3>44</h3>
+
+                        <p>User Registrations</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-person-add"></i>
+                    </div>
+                    <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>-->
+            <!-- ./col -->
+            <!--<div class="col-lg-3 col-6">-->
+            <!-- small box -->
+            <!--<div class="small-box bg-danger">
+                    <div class="inner">
+                        <h3>65</h3>
+
+                        <p>Unique Visitors</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-pie-graph"></i>
+                    </div>
+                    <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>-->
+            <!-- ./col -->
+        </div>
+        <!-- /.row -->
+        <!-- Main row -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="row">
+                            <div class="col-md-10">
+                                <h3 style=" margin-top: 5px; font-size: x-large;" class="card-title">Ürün Kategori Tablosu</h3>
+                            </div>
+                            <div class="col-md-2">
+                                <a href="/Admin/Product/Add" class="btn btn-primary" style="float:right">
+                                    Ürün Ekle
+                                </a>
+                            </div>
+                        </div>
+
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                        <table id="example1" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Kategori</th>
+                                    <th>Ürün Adedi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    var category = Categories.Where(i => i.Id == item.CategoryId).FirstOrDefault();
+                                    <tr>
+                                        <td>@category.Name</td>
+                                        <td>@item.Total</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+
+            </div>
+        </div>
+        <!-- /.row (main row) -->
+    </div><!-- /.container-fluid -->
+</section>
+
+@section scripts{
+    <script>
+        $("#home").addClass("active")
+    </script>
+
+    <script>
+        function GetList() {
+
+            $.ajax({
+                url: "/Admin/Home/Currency",
+
+                success: function (result) {
+                    $('#card-body').html(result);
+
+                    setTimeout(function () {
+                        GetList();
+                        //alert('a');
+                    }, 10000);
+                },
+
+            })
+        }
+
+        $(document).ready(function () {
+            GetList();
+        });
+    </script>
+}

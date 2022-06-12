@@ -1,0 +1,102 @@
+﻿@using CAFEMENUPROJECT.DATA.Entity
+@model IEnumerable<Category>
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<!-- end breadcrumb section -->
+<!-- products -->
+<div class="product-section mt-150 mb-150">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="product-filters">
+                    <ul>
+                        <li class="active" onclick="GetList(0)">ALL</li>
+                        @foreach (var item in Model)
+                        {
+                            <li class="active" onclick="GetCategory('@item.Id'); GetList('@item.Id');GetLoad('@item.Id')">@item.Name</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-12" id="card-body2">
+                
+            </div>
+        </div>
+
+        <div id="card-body">
+            
+        </div>
+       
+
+
+    </div>
+</div>
+<!-- end products -->
+
+@section scripts{
+
+    <script>
+        function GetList(id) {
+
+
+            $.ajax({
+                url: "/Home/GetProduct",
+                data: {
+                    "id": id
+                },
+
+                success: function (result) {
+                    $('#card-body').html(result);
+
+                },
+
+            })
+        }
+
+        function GetCategory(id) {
+
+
+            $.ajax({
+                url: "/Home/GetCategory",
+                data: {
+                    "id": id
+                },
+
+                success: function (result) {
+                    $('#card-body2').html(result);
+
+                },
+
+            })
+        }
+
+        function GetLoad(id) {
+
+
+            $.ajax({
+                url: "/Home/GetLoad",
+                data: {
+                    "id": id
+                },
+
+                success: function (result) {
+                    GetList(result);
+                },
+
+            })
+        }
+
+        $(document).ready(function () {
+            GetList(0);
+            GetCategory(0);
+        });
+
+    </script>
+
+}

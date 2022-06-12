@@ -1,0 +1,41 @@
+﻿@using CAFEMENUPROJECT.DATA.Entity
+@using CAFEMENUPROJECT.DATA.Model
+@using CAFEMENUPROJECT.DATA.DataAccess
+@using System.Globalization;
+
+@model IEnumerable<Product>
+
+@{
+    var Categories = ViewBag.Categories as List<Category>;
+    var currency = ViewBag.Currency as List<CurrencyDto>;
+    //var ProductProperties = ViewBag.ProductProperties as List<ProductProperty>;
+    var Properties = ViewBag.Properties as List<Property>;
+}
+
+<div class="row product-lists">
+    @foreach (var item in Model)
+    {
+        var Category = Categories.Where(i => i.Id == item.CategoryId).FirstOrDefault();
+        var tl = item.Price * Convert.ToDouble(currency[2].Value);
+        <div class="col-lg-4 col-md-6 text-center">
+            <div class="single-product-item">
+                <div class="product-image">
+                    <a href=""><img src="~/img/@item.ImagePath" alt="" style="width: 300px; height: 300px "></a>
+                </div>
+                <p class="product-price">@item.Name</p>
+                <p class="product-price"><span></span> @item.Price$ = @tl.ToString("C2", CultureInfo.CreateSpecificCulture("tr-TR")) </p>
+                <h3>@Category.Name</h3>
+                @*<a href="cart.html" class="cart-btn"><i class="fas fa-shopping-cart"></i> Add to Cart</a>*@
+                <div class="product-filters">
+                    <ul>
+                        @foreach (var prop in ProductPropertyDataAccess.GetList(item.Id))
+                        {
+                            var property = Properties.Where(i => i.Id == prop.PropertyId).FirstOrDefault();
+                            <li class="active">@property.Key => <b>@property.Value</b></li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    }
+</div>

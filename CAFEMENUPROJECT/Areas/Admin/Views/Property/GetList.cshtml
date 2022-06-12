@@ -1,0 +1,37 @@
+﻿@using CAFEMENUPROJECT.DATA.Entity
+
+@{
+    var ProductProperties = ViewBag.ProductProperties as List<ProductProperty>;
+    var Properties = ViewBag.Properties as List<Property>;
+    var Id = ViewBag.Id;
+}
+
+
+<div>
+    <table id="example1" class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Özellik</th>
+                <th>Değer</th>
+                <th>İşlem</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in ProductProperties)
+            {
+                var property = Properties.Where(i => i.Id == item.PropertyId).FirstOrDefault();
+                <tr>
+                    <td>@property.Key</td>
+                    <td>@property.Value</td>
+                    <td>
+                        <button class="btn btn-warning" data-toggle="modal" data-target="#modalUpdate" onclick="Duzenle('@property.Id')">Düzenle</button>
+                        <button class="btn btn-danger" onclick="Sil('@property.Id')">Sil</button>
+                    </td>
+                </tr>
+            }
+
+
+        </tbody>
+
+    </table>
+</div>

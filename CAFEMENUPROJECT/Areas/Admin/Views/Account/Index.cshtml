@@ -1,0 +1,301 @@
+﻿@using CAFEMENUPROJECT.DATA.Entity
+@model IEnumerable<User>
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+
+}
+
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>@ViewData["Title"]</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="/Admin">Home</a></li>
+                    <li class="breadcrumb-item active">@ViewData["Title"]</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="row">
+                            <div class="col-md-10">
+                                <h3 style=" margin-top: 5px; font-size: x-large;" class="card-title">Ürün Kategori Tablosu</h3>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalAdd" style="float:right">
+                                    Kullanıcı Ekle
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                        <table id="example1" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>İsim</th>
+                                    <th>Soyisim</th>
+                                    <th>Kullanıcı Adı</th>
+                                    <th>İşlem</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>@item.Name</td>
+                                        <td>@item.Surname</td>
+                                        <td>@item.Username</td>
+                                        <td>
+                                            <a class="btn btn-info" href="/Admin/Account/Details?id=@item.Id">Detay</a>
+                                            <button class="btn btn-warning" data-toggle="modal" data-target="#modalUpdate" onclick="Duzenle('@item.Id')">Düzenle</button>
+                                            <button class="btn btn-danger" onclick="Sil('@item.Id')">Sil</button>
+                                        </td>
+                                    </tr>
+                                }
+
+
+                            </tbody>
+
+                        </table>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+    </div>
+    <!-- /.container-fluid -->
+</section>
+
+<div class="modal fade" id="modalAdd">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Large Modal</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <div class="card card-primary">
+                    <form>
+                        <div class="card-body">
+
+                            <div class="form-group">
+                                <label for="Name">Name</label>
+                                <input type="text" class="form-control" id="Name" placeholder="Enter Name">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="Surname">Surname</label>
+                                <input type="text" class="form-control" id="Surname" placeholder="Enter Surname">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="Username">Username</label>
+                                <input type="text" class="form-control" id="Username" placeholder="Enter Username">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="Password">Password</label>
+                                <input type="password" class="form-control" id="Password" placeholder="Enter Password">
+                            </div>
+
+                        </div>
+                        <!-- /.card-body -->
+
+                    </form>
+                </div>
+
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="SaveUser" onclick="Ekle()">Kaydet</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+<div class="modal fade" id="modalUpdate">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Large Modal</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modal-body">
+
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="DuzenlePost()">Kaydet</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+<script>
+
+    function closeModal() {
+        $('#modalAdd').modal('hide');
+        $('#modalUpdate').modal('hide');
+    }
+
+    function Ekle() {
+
+        var model = {
+            Name: $("#Name").val(),
+            Surname: $("#Surname").val(),
+            Username: $("#Username").val(),
+            HashPassword: $("#Password").val(),
+        };
+
+        $.ajax({
+            url: "/Admin/Account/Add",
+            data: {
+                "model": model
+            },
+            type: 'POST',
+
+            success: function (response) {
+
+                if (response.status == true) {
+
+                    toastr.success(response.message);
+
+                    setTimeout(function () {
+                        closeModal();
+                        location.reload();
+                    }, 1000);
+                }
+                else {
+                    toastr.error(response.message);
+
+
+                }
+            },
+
+            //error: function (error) {
+            //    alert(error.Message);
+
+            //}
+        })
+    }
+
+    function Sil(id) {
+
+
+
+        $.ajax({
+            url: "/Admin/Account/Delete",
+            data: {
+                "id": id
+            },
+            type: 'POST',
+
+            success: function (response) {
+
+                if (response.status == true) {
+
+                    toastr.success(response.message);
+
+                    setTimeout(function () {
+                        location.reload();
+                    }, 1500);
+                }
+                else {
+                    toastr.error(response.message);
+                }
+            },
+
+        })
+    }
+
+    function Duzenle(id) {
+
+        $.ajax({
+            url: "/Admin/Account/Update",
+            data: {
+                "id": id
+            },
+
+            success: function (result) {
+                $('#modal-body').html(result);
+
+            },
+
+        })
+    }
+
+    function DuzenlePost() {
+
+        var model = {
+            Id: $("#IdUpdate").val(),
+            Name: $("#NameUpdate").val(),
+            Surname: $("#SurnameUpdate").val(),
+            Username: $("#UsernameUpdate").val(),
+            HashPassword: $("#PasswordUpdate").val(),
+        };
+
+        $.ajax({
+            url: "/Admin/Account/Update",
+            data: {
+                "model": model
+            },
+            type: 'POST',
+
+            success: function (response) {
+
+                if (response.status == true) {
+
+                    toastr.success(response.message);
+
+                    setTimeout(function () {
+                        closeModal();
+                        closeModal();
+                    }, 1000);
+                }
+                else {
+                    toastr.error(response.message);
+                }
+            },
+
+            //error: function (error) {
+            //    alert(error.Message);
+
+            //}
+        })
+    }
+
+</script>
+
+@section scripts{
+    <script>
+        $("#users").addClass("active")
+    </script>
+}

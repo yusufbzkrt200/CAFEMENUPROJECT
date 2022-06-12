@@ -1,0 +1,168 @@
+﻿@using CAFEMENUPROJECT.DATA.Entity
+@model IEnumerable<Product>
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    var categories = ViewBag.Categories as List<Category>;
+    var users = ViewBag.Users as List<User>;
+}
+
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>@ViewData["Title"]</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="/Admin">Home</a></li>
+                    <li class="breadcrumb-item active">@ViewData["Title"]</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="row">
+                            <div class="col-md-10">
+                                <h3 style=" margin-top: 5px; font-size: x-large;" class="card-title">Ürün Kategori Tablosu</h3>
+                            </div>
+                            <div class="col-md-2">
+                                <a href="/Admin/Product/Add" class="btn btn-primary" style="float:right">
+                                    Ürün Ekle
+                                </a>
+                            </div>
+                        </div>
+
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                        <table id="example1" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Fotoğraf</th>
+                                    <th>İsim</th>
+                                    <th>Kategori Adı</th>
+                                    <th>Fiyat</th>
+                                    <th>Kaydeden Kişi</th>
+                                    <th>İşlem</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td><img style="max-width:30px;max-height:30px" src="~/img/@item.ImagePath" alt="Alternate Text" /></td>
+                                        <td>@item.Name</td>
+
+                                        @if (item.CategoryId > 0)
+                                        {
+                                            var category = categories.Where(i => i.Id == item.CategoryId).FirstOrDefault();
+                                            if (category != null)
+                                            {
+                                                <td>@category.Name</td>
+                                            }
+                                            else
+                                            {
+                                                <td>Kategori Silindi!</td>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <td>Kategori Yok!</td>
+                                        }
+                                        <td>@item.Price</td>
+
+                                        @if (item.CreatorUserId > 0)
+                                        {
+                                            var user = users.Where(i => i.Id == item.CreatorUserId).FirstOrDefault();
+                                            if (user != null)
+                                            {
+                                                <td>@user.Name @user.Surname</td>
+                                            }
+                                            else
+                                            {
+                                                <td>Kullanıcı Silindi!</td>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <td>Kategori Yok!</td>
+                                        }
+
+                                        <td>
+                                            <a class="btn btn-warning" href="/Admin/Product/Update?id=@item.Id">Düzenle</a>
+                                            <a class="btn btn-info" href="/Admin/Property/Index?id=@item.Id">Özellik Ekle</a>
+                                            <button class="btn btn-danger" onclick="Sil('@item.Id')">Sil</button>
+                                        </td>
+                                    </tr>
+                                }
+
+
+                            </tbody>
+
+                        </table>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+    </div>
+    <!-- /.container-fluid -->
+</section>
+
+
+<script>
+
+    function Sil(id) {
+
+
+
+        $.ajax({
+            url: "/Admin/Product/Delete",
+            data: {
+                "id": id
+            },
+            type: 'POST',
+
+            success: function (response) {
+
+                if (response.status == true) {
+
+                    toastr.success(response.message);
+
+                    setTimeout(function () {
+                        location.reload();
+                    }, 750);
+                }
+                else {
+                    toastr.error(response.message);
+                }
+            },
+
+        })
+    }
+
+
+</script>
+
+@section scripts{
+    <script>
+        $("#product").addClass("active")
+    </script>
+}
+
+
+

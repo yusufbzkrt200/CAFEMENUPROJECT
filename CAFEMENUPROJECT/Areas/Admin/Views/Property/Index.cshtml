@@ -1,0 +1,294 @@
+﻿@using CAFEMENUPROJECT.DATA.Entity
+@model Product
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>@ViewData["Title"]</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="/Admin">Home</a></li>
+                    <li class="breadcrumb-item active">@ViewData["Title"]</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="row">
+                            <div class="col-md-10">
+                                <h3 style=" margin-top: 5px; font-size: x-large;" class="card-title">Ürün Kategori Tablosu</h3>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalAdd" style="float:right">
+                                    Özellik Ekle
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body" id="card-body">
+                        
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+    </div>
+    <!-- /.container-fluid -->
+</section>
+
+<div class="modal fade" id="modalAdd">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Large Modal</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <div class="card card-primary">
+                    <form>
+                        <div class="card-body">
+
+                            <div class="form-group">
+                                <label for="Key">Key</label>
+                                <input type="text" class="form-control" id="Key" placeholder="Enter Key">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="Value">Value</label>
+                                <input type="text" class="form-control" id="Value" placeholder="Enter Value">
+                            </div>
+
+                        </div>
+                        <!-- /.card-body -->
+
+                    </form>
+                </div>
+
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="SaveUser" onclick="Ekle()">Kaydet</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+<div class="modal fade" id="modalUpdate">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Large Modal</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modal-body">
+
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="DuzenlePost()">Kaydet</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+@section scripts{
+
+    <script>
+    function GetList() {
+        var id = @Model.Id;
+
+        $.ajax({
+            url: "/Admin/Property/GetList",
+            data: {
+                "id": id
+            },
+
+            success: function (result) {
+                $('#card-body').html(result);
+
+            },
+
+        })
+    }
+
+    $(document).ready(function () {
+        GetList();
+    });
+
+
+
+    </script>
+
+    <script>
+
+    function closeModal() {
+        $('#modalAdd').modal('hide');
+        $('#modalUpdate').modal('hide');
+    }
+
+
+
+    function Ekle() {
+
+        var model = {
+            Key: $("#Key").val(),
+            Value: $("#Value").val(),
+        };
+
+        var Id = @Model.Id;
+
+        $.ajax({
+            url: "/Admin/Property/Add",
+            data: {
+                "model": model,
+                "id": Id
+            },
+            type: 'POST',
+
+            success: function (response) {
+
+                if (response.status == true) {
+
+                    toastr.success(response.message);
+
+                    setTimeout(function () {
+                        closeModal();
+                        GetList();
+
+                    }, 1000);
+                }
+                else {
+                    toastr.error(response.message);
+
+
+                }
+            },
+
+            error: function (error) {
+                alert(error.Message);
+
+            }
+        })
+    }
+
+    function Sil(id) {
+
+        $.ajax({
+            url: "/Admin/Property/Delete",
+            data: {
+                "id": id
+            },
+            type: 'POST',
+
+            success: function (response) {
+
+                if (response.status == true) {
+
+                    toastr.success(response.message);
+                    GetList();
+
+                    //setTimeout(function () {
+                    //    closeModal();
+                    //}, 1500);
+                }
+                else {
+                    toastr.error(response.message);
+                }
+            },
+
+        })
+    }
+
+    function Duzenle(id) {
+
+        $.ajax({
+            url: "/Admin/Property/Update",
+            data: {
+                "id": id
+            },
+
+            success: function (result) {
+                $('#modal-body').html(result);
+
+            },
+
+        })
+    }
+
+    function DuzenlePost() {
+
+        var model = {
+            Id: $("#IdUpdate").val(),
+            Key: $("#KeyUpdate").val(),
+            Value: $("#ValueUpdate").val(),
+
+        };
+
+        $.ajax({
+            url: "/Admin/Property/Update",
+            data: {
+                "model": model
+            },
+            type: 'POST',
+
+            success: function (response) {
+
+                if (response.status == true) {
+
+                    toastr.success(response.message);
+
+                    setTimeout(function () {
+                        closeModal();
+                        GetList();
+                    }, 1000);
+                }
+                else {
+                    toastr.error(response.message);
+                }
+            },
+
+            //error: function (error) {
+            //    alert(error.Message);
+
+            //}
+        })
+    }
+
+
+
+    </script>
+
+
+    <script>
+        $("#product").addClass("active")
+    </script>
+}

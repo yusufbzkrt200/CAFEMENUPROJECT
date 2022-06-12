@@ -1,0 +1,311 @@
+﻿@using CAFEMENUPROJECT.DATA.Entity
+@model IEnumerable<Category>
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    var users = ViewBag.Users as List<User>;
+}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>@ViewData["Title"]</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="/Admin">Home</a></li>
+                    <li class="breadcrumb-item active">@ViewData["Title"]</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="row">
+                            <div class="col-md-10">
+                                <h3 style=" margin-top: 5px; font-size: x-large;" class="card-title">Ürün Kategori Tablosu</h3>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalAdd" style="float:right">
+                                    Kategori Ekle
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                        <table id="example1" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>İsim</th>
+                                    <th>Üst Kategori</th>
+                                    <th>Eklenme Tarihi</th>
+                                    <th>Ekleyen Kişi</th>
+                                    <th>İşlem</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    var user = users.Where(i => i.Id == item.CreatorUserId).FirstOrDefault();
+                                    <tr>
+                                        <td>@item.Name</td>
+                                        @if (item.ParentCategoryId > 0)
+                                        {
+                                            var category = Model.Where(i => i.Id == item.ParentCategoryId).FirstOrDefault();
+                                            <td>@category.Name</td>
+                                        }
+                                        else
+                                        {
+                                            <td>Yok!</td>
+                                        }
+                                        <td>@item.CreatedDate</td>
+                                        @if (user != null)
+                                        {
+                                            <td>@user.Name @user.Surname</td>
+                                        }
+                                        else
+                                        {
+                                            <td>Yok!</td>
+                                        }
+                                        @*<td> @item.CreatorUserId</td>*@
+
+                                        <td>
+                                            <button class="btn btn-warning" data-toggle="modal" data-target="#modalUpdate" onclick="Duzenle('@item.Id')">Düzenle</button>
+                                            <button class="btn btn-danger" onclick="Sil('@item.Id')">Sil</button>
+                                        </td>
+                                    </tr>
+                                }
+
+
+                            </tbody>
+
+                        </table>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+    </div>
+    <!-- /.container-fluid -->
+</section>
+
+<div class="modal fade" id="modalAdd">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Large Modal</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <div class="card card-primary">
+                    <form>
+                        <div class="card-body">
+
+                            <div class="form-group">
+                                <label for="Name">Name</label>
+                                <input type="text" class="form-control" id="Name" placeholder="Enter Name">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="ParentCategoryId">Parent Category (If You Want Add)</label>
+                                <select class="form-control" id="ParentCategoryId" placeholder="Parent Category">
+                                    <option value="">Select</option>
+                                    @foreach (var item in Model)
+                                    {
+                                        <option value="@item.Id">@item.Name</option>
+                                    }
+                                </select>
+                            </div>
+
+                        </div>
+                        <!-- /.card-body -->
+
+                    </form>
+                </div>
+
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="SaveUser" onclick="Ekle()">Kaydet</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+<div class="modal fade" id="modalUpdate">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Large Modal</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modal-body">
+
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="DuzenlePost()">Kaydet</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+<script>
+
+    function closeModal() {
+        $('#modalAdd').modal('hide');
+        $('#modalUpdate').modal('hide');
+    }
+
+    function Ekle() {
+
+        var model = {
+            Name: $("#Name").val(),
+            ParentCategoryId: $("#ParentCategoryId").val(),
+        };
+
+        $.ajax({
+            url: "/Admin/Category/Add",
+            data: {
+                "model": model
+            },
+            type: 'POST',
+
+            success: function (response) {
+
+                if (response.status == true) {
+
+                    toastr.success(response.message);
+
+                    setTimeout(function () {
+                        closeModal();
+                        location.reload();
+                    }, 750);
+                }
+                else {
+                    toastr.error(response.message);
+
+
+                }
+            },
+
+            //error: function (error) {
+            //    alert(error.Message);
+
+            //}
+        })
+    }
+
+    function Sil(id) {
+
+
+
+        $.ajax({
+            url: "/Admin/Category/Delete",
+            data: {
+                "id": id
+            },
+            type: 'POST',
+
+            success: function (response) {
+
+                if (response.status == true) {
+
+                    toastr.success(response.message);
+                    setTimeout(function () {
+                        location.reload();
+                    }, 750);
+                   
+                }
+                else {
+                    toastr.error(response.message);
+                }
+            },
+
+        })
+    }
+
+    function Duzenle(id) {
+
+        $.ajax({
+            url: "/Admin/Category/Update",
+            data: {
+                "id": id
+            },
+
+            success: function (result) {
+                $('#modal-body').html(result);
+
+            },
+
+        })
+    }
+
+    function DuzenlePost() {
+
+        var model = {
+            Id: $("#IdUpdate").val(),
+            Name: $("#NameUpdate").val(),
+            ParentCategoryId: $("#ParentCategoryIdUpdate").val(),
+        };
+
+        $.ajax({
+            url: "/Admin/Category/Update",
+            data: {
+                "model": model
+            },
+            type: 'POST',
+
+            success: function (response) {
+
+                if (response.status == true) {
+
+                    toastr.success(response.message);
+
+                    setTimeout(function () {
+                        location.reload();
+                        closeModal();
+                    }, 750);
+                }
+                else {
+                    toastr.error(response.message);
+                }
+            },
+
+            //error: function (error) {
+            //    alert(error.Message);
+
+            //}
+        })
+    }
+
+</script>
+
+@section scripts{
+    <script>
+        $("#category").addClass("active")
+    </script>
+}

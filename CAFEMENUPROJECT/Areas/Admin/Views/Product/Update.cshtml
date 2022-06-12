@@ -1,0 +1,103 @@
+﻿@using CAFEMENUPROJECT.DATA.Entity
+@model Product
+@{
+    ViewData["Title"] = "Update";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    var Categories = ViewBag.Categories as List<Category>;
+    var category = Categories.Where(i => i.Id == Model.CategoryId).FirstOrDefault();
+
+}
+
+@if (ViewBag.Hata != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @ViewBag.Hata
+    </div>
+}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>@ViewData["Title"]</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="/Admin">Home</a></li>
+                    <li class="breadcrumb-item active">@ViewData["Title"]</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title">Quick Example</h3>
+                    </div>
+                    <!-- /.card-header -->
+                    <!-- form start -->
+                    <form asp-area="Admin" asp-controller="Product" asp-action="Update" method="post" enctype="multipart/form-data">
+                        <div class="card-body">
+                            <input type="hidden" name="Id" value="@Model.Id" />
+
+                            <div class="form-group">
+                                <label for="Name">Name</label>
+                                <input type="text" class="form-control" id="Name" name="Name" placeholder="Enter Name" value="@Model.Name">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="CategoryId">Category</label>
+                                <select class="form-control" id="CategoryId" name="CategoryId" placeholder="Category" value="@Model.CategoryId">
+                                    <option value="">Select</option>
+                                    @if (category != null)
+                                    {
+                                        <option value="@category.Id" selected>@category.Name</option>
+                                        Categories.Remove(category);
+                                    }
+                                    @foreach (var item in Categories)
+                                    {
+                                        <option value="@item.Id">@item.Name</option>
+                                    }
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="exampleInputFile">File input (If You Want Update, Aspect Ratio Should be 1:1)</label>
+                                <div class="input-group">
+                                    <div class="custom-file">
+                                        <input type="file" class="custom-file-input" id="dosya" name="dosya">
+                                        <label class="custom-file-label" for="dosya">Choose file</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="Price">Price</label>
+                                <input type="number" class="form-control" id="Price" name="Price" placeholder="Enter Price" value="@Model.Price">
+                            </div>
+
+                        </div>
+                        <!-- /.card-body -->
+
+                        <div class="card-footer">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+@section scripts{
+    <script>
+        $("#product").addClass("active")
+    </script>
+}

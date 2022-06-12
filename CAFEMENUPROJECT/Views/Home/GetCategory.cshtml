@@ -1,0 +1,15 @@
+﻿@using CAFEMENUPROJECT.DATA.Entity
+@model IEnumerable<Category>
+@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+
+<div class="product-filters">
+    <ul>
+        @foreach (var item in Model)
+        {
+            <li class="active" onclick="GetList('@item.Id')">@item.Name</li>
+        }
+    </ul>
+</div>
